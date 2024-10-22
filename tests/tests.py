@@ -47,8 +47,8 @@ def test_01_parse_dotnet():
         for s in pe_file.pe.sections:
             print(f"     {s}")
 
-        Color.pl('\n{+} {O}PE Resources:{W}')
-        Color.pl(Tools.pe_resource_table(pe_file))
+        #Color.pl('\n{+} {O}PE Resources:{W}')
+        #Color.pl(Tools.pe_resource_table(pe_file))
 
         if pe_file.pe.certificate_table is not None:
             Color.pl('\n{+} {O}PE Certificates:{W}')
