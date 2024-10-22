@@ -11,3 +11,4 @@ pyOpenSSL==23.2.0
 asn1crypto>=1.5.1
 psutil>=5.9.6
 pyyaml>=5.0
+setuptools>=75.2.0
