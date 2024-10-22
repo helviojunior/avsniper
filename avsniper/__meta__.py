@@ -1,0 +1,9 @@
+__version__ = '0.1.0'
+__title__ = "AV Sniper"
+__description__ = "AV Sniper is a tool to strip and test binary string."
+__url__ = "https://github.com/helviojunior/avsniper"
+__build__ = 0x63c974a8
+__author__ = "Helvio Junior (M4v3r1ck)"
+__author_email__ = "helvio_junior@hotmail.com"
+__license__ = "GPL-3.0"
+__copyright__ = "Copyright Helvio Junior"

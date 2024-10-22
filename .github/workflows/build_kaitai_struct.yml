@@ -1,0 +1,186 @@
+name: Kaitai Struct
+
+on:
+    push:
+      branches: [ main ]
+      paths:
+        - '**.ksy'
+        - tools/deploy.sh
+        - .github/workflows/build_kaitai_struct.yml
+
+    pull_request:
+      branches: [ main ]
+      paths:
+        - '**.ksy'
+        - tools/deploy.sh
+        - .github/workflows/build_kaitai_struct.yml
+
+jobs:
+  compile:
+    name: Build Kaitai Struct artifacts
+    runs-on: ubuntu-latest
+    if:
+      github.event_name == 'push' || github.event.pull_request.head.repo.full_name !=
+      github.repository
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10"]
+        experimental: [false]
+    continue-on-error: ${{ matrix.experimental }}
+
+    steps:
+      - name: Checkout avsniper
+        uses: actions/checkout@v3
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r tests/requirements-test.txt
+
+      - name: Install dependencies
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: git ssh locales default-jre-headless make gcc libc6-dev graphviz rsync wget jq zip unzip curl ca-certificates
+          version: 1.0
+
+      - name: Install kaitai struct dependencies
+        run: |
+          sudo apt-get update
+          curl -fsSL -O https://github.com/kaitai-io/kaitai_struct_compiler/releases/download/0.10/kaitai-struct-compiler_0.10_all.deb
+          sha256sum --check --warn .github/checksums
+          sudo apt-get install ./kaitai-struct-compiler_0.10_all.deb
+          ksc --version
+
+      - name: Fix locales
+        run: |
+          echo 'en_US.UTF-8 UTF-8' | sudo tee /etc/locale.gen
+          echo 'LANG="en_US.UTF-8"' | sudo tee /etc/default/locale
+          sudo dpkg-reconfigure --frontend=noninteractive locales
+          locale
+
+      - name: Compile Kaitai Struct
+        run: |
+          ksc -t python --outdir ./avsniper/formats/ --python-package avsniper ./avsniper/structs/*.ksy
+
+      - name: Install avsniper
+        run: |
+          pip install .
+
+      - name: Run unit tests
+        run: |
+          pytest -s tests/tests.py
+
+      - name: Build artifact
+        run: |
+          python setup.py sdist
+
+      - name: Compact Kaitai Struct
+        run: |
+          zip -j -r -9 /tmp/structs.zip ./avsniper/formats/*
+
+      - name: Upload structs
+        uses: actions/upload-artifact@v4
+        with:
+          name: structs
+          path: /tmp/structs.zip
+          retention-days: 1
+
+  test:
+    name: Run unit tests and build wheel
+    needs: compile
+    runs-on: ${{ matrix.os }}
+    if:
+      github.event_name == 'push' || github.event.pull_request.head.repo.full_name !=
+      github.repository
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8", "3.9", "3.10"]
+        experimental: [false]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - python-version: "3.11"
+            experimental: true
+            os: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
+
+    steps:
+      - name: Checkout avsniper
+        uses: actions/checkout@v3
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Download arfactory
+        uses: actions/download-artifact@v4
+        id: download
+        with:
+          name: structs
+          path: /tmp/
+
+      - name: Copy binaries
+        run: |
+          find ./avsniper/formats -name "*.py" ! -name "__init__.py" -exec rm -rf {} \;
+          unzip -o ${{steps.download.outputs.download-path}}/structs.zip -d ./avsniper/formats/
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r tests/requirements-test.txt
+
+      - name: Install avsniper
+        run: |
+          pip install .
+
+      - name: Run unit tests
+        run: |
+          pytest -s tests/tests.py
+
+      - name: Build artifact
+        run: |
+          python setup.py sdist
+
+  commit:
+    name: Commit and Push Kaitai Struct
+    needs: test
+    runs-on: ubuntu-latest
+    if:
+      github.event_name == 'push' || github.event.pull_request.head.repo.full_name !=
+      github.repository
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10"]
+        experimental: [false]
+    continue-on-error: ${{ matrix.experimental }}
+
+    steps:
+      - name: Checkout avsniper
+        uses: actions/checkout@v3
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Download arfactory
+        uses: actions/download-artifact@v4
+        id: download
+        with:
+          name: structs.zip
+          path: /tmp/
+
+      - name: Deploy
+        run: |
+          bash tools/deploy.sh

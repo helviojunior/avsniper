@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = ["version", "dependencies"]
+name = "avsniper"
+description = "AV Sniper is a tool to strip and check binary string."
+readme = {file = "README.md", content-type = "text/markdown"}
+requires-python = ">=3.9,<4"
+license = {file = "LICENSE"}
+keywords = ["av sniper", "development", "red team"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: System Administrators",
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "Topic :: Security",
+  "Topic :: Utilities"
+]
+
+authors = [
+  {name = "Helvio Junior (M4v3r1ck)", email = "helvio_junior@hotmail.com"}
+]
+maintainers = [
+  {name = "Helvio Junior (M4v3r1ck)", email = "helvio_junior@hotmail.com"}
+]
+
+[tool.setuptools]
+include-package-data = false
+#packages = ["avsniper"]
+#package-dir = {"" = "avsniper"}
+
+[tool.setuptools.packages.find]
+namespaces = true
+include = [
+  "avsniper*",
+  "avsniper.*",
+]
+exclude = ["avsniper*tests", "avsniper*images", "avsniper*docs"]
+# alternatively: `exclude = ["additional*"]`
+
+[tool.setuptools.package-data]
+'avsniper' = [
+  'libs/*',
+  'libs/libmagic_windows/*',
+  'libs/libmagic_windows/**/*',
+  'libs/binutils/*',
+  'libs/binutils/**/*'
+]
+
+[project.urls]
+Documentation = "https://github.com/helviojunior/avsniper"
+Source = "https://github.com/helviojunior/avsniper"
+Tracker = "https://github.com/helviojunior/avsniper"
+Author = "https://github.com/helviojunior"
+
+[tool.setuptools.dynamic]
+version = {attr = "avsniper.__meta__.__version__"}
+dependencies = {file = "requirements.txt"}
+
+[project.scripts]
+avsniper = "avsniper.avsniper:run"
