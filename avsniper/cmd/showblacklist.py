@@ -13,7 +13,7 @@ import string as pystr
 
 import hexdump
 from avsniper.util.disassembler import Disassembler
-from clint.textui import progress
+from avsniper.util import progress
 
 from avsniper.util.cursor import Cursor
 from avsniper.util.exerunner import ExeRunner

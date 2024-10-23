@@ -11,8 +11,8 @@ from typing import List
 import hexdump
 
 from avsniper.formats.microsoft_pe import MicrosoftPe
+from avsniper.util import progress
 from avsniper.util.worker import Worker
-from clint.textui import progress
 from functools import reduce
 
 from avsniper.cmdbase import CmdBase

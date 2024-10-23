@@ -12,7 +12,7 @@ import hexdump
 from pathlib import Path
 
 from avsniper.util.worker import Worker
-from clint.textui import progress
+from avsniper.util import progress
 from functools import reduce
 
 from avsniper.cmdbase import CmdBase

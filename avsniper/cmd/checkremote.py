@@ -14,7 +14,7 @@ from urllib.parse import urlparse
 
 import hexdump
 import requests
-from clint.textui import progress
+from avsniper.util import progress
 
 from avsniper.cmd.checker import Checker
 from avsniper.util.cursor import Cursor

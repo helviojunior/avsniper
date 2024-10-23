@@ -22,7 +22,7 @@ import yaml
 
 import hexdump
 from avsniper.util.process import Process
-from clint.textui import progress
+from avsniper.util import progress
 
 from avsniper.cmd.checkremote import RemoteFile
 from avsniper.cmd.enumerate import EnumerateFile

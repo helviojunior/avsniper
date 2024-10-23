@@ -6,7 +6,7 @@ import time
 import hexdump
 from argparse import _ArgumentGroup, Namespace
 from typing import Union
-from clint.textui import progress
+from avsniper.util import progress
 
 from avsniper.formats.microsoft_pe import MicrosoftPe
 from avsniper.util.cursor import Cursor

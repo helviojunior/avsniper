@@ -12,7 +12,6 @@ from pathlib import Path
 from typing import Optional
 
 import hexdump
-from clint.textui import progress
 
 from avsniper.cmd.enumerate import EnumerateFile
 from avsniper.cmd.strip import StripFile

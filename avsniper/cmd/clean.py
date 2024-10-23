@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Optional
 
 import hexdump
-from clint.textui import progress
+from avsniper.util import progress
 
 from avsniper.util.cursor import Cursor
 from avsniper.util.exerunner import ExeRunner
