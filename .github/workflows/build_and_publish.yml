@@ -125,3 +125,4 @@ jobs:
         with:
           user: "__token__"
           password: ${{ secrets.prod_pypi_password }}
+          debug: true
