@@ -77,9 +77,15 @@ jobs:
     name: Publish on Live Environment
     needs: build
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/avsniper
     if:
       github.event_name == 'push' || github.event.pull_request.head.repo.full_name !=
       github.repository
+
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
 
     strategy:
       fail-fast: false
@@ -88,15 +94,12 @@ jobs:
         experimental: [false]
     continue-on-error: ${{ matrix.experimental }}
 
-    permissions:
-      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
-
     steps:
       - name: Checkout avsniper
         uses: actions/checkout@v3
 
       - name: Setup Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -118,6 +121,6 @@ jobs:
 
       - name: Publish package in Live Environment
         #if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-        uses: pypa/gh-action-pypi-publish@v1.9.0
+        uses: pypa/gh-action-pypi-publish@v1.8.13
         with:
           password: ${{ secrets.prod_pypi_password }}
